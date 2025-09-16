@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>대구소프트웨어마이스터고 지원서 - 김경호</title>
+    <style>
+        body {
+          font-family: "Arial", sans-serif;
+          max-width: 800px;
+          margin: 50px auto;
+          padding: 20px;
+          line-height: 1.6;
+          background: #f4f6f8;
+        }
+        h1 {
+          font-size: 48px;
+          text-align: center;
+          color: #2c3e50;
+          font-weight: bold;
+          margin-bottom: 40px;
+        }
+        section {
+          background: white;
+          padding: 20px;
+          margin-bottom: 20px;
+          border-radius: 12px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+          overflow: hidden;
+        }
+        h2 {
+          color: #2980b9;
+          margin-bottom: 10px;
+        }
+        button {
+          padding: 10px 20px;
+          font-size: 24px;
+          cursor: pointer;
+          border: none;
+          border-radius: 8px;
+          background-color: #3498db;
+          color: white;
+          margin-top: 10px;
+          transition: background 0.3s;
+        }
+        button:hover {
+          background-color: #2980b9;
+        }
+        .hidden {
+          display: none;
+          margin-top: 10px;
+          padding: 10px;
+          background-color: #ecf0f1;
+          border-radius: 8px;
+          animation: fadeIn 0.5s ease-in-out;
+        }
+        img.profile {
+          display: block;
+          max-width: 150px;
+          border-radius: 50%;
+          margin: 0 auto 15px auto;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+<h1>대구소프트웨어마이스터고 지원서</h1>
+
+<section>
+    <img src="profile.jpg" alt="프로필 사진" class="profile">
+    <h2>기본 정보</h2>
+    <p><strong>이름:</strong> 김경호</p>
+    <p><strong>지원 분야:</strong> 소프트웨어 개발</p>
+</section>
+
+<section>
+    <h2>자기소개</h2>
+    <button onclick="toggleContent('introContent')">자기소개 보기</button>
+    <div id="introContent" class="hidden">
+        안녕하세요, 저는 문제 해결과 개발에 관심이 많은 학생입니다.<br>
+        마이스터고에서 전문 기술을 배우고 성장하고 싶습니다.
+    </div>
+</section>
+
+<section>
+    <h2>경험 및 활동</h2>
+    <button onclick="toggleContent('experienceContent')">경험 보기</button>
+    <div id="experienceContent" class="hidden">
+        <ul>
+            <li>파이썬으로 간단한 게임 제작</li>
+            <li>웹사이트 기본 구조(HTML, CSS, JS) 학습</li>
+            <li>GitHub를 활용한 프로젝트 관리 경험</li>
+        </ul>
+    </div>
+</section>
+
+<script>
+    function toggleContent(id) {
+      const element = document.getElementById(id);
+      if (element.style.display === "none" || element.style.display === "") {
+        element.style.display = "block";
+      } else {
+        element.style.display = "none";
+      }
+    }
+</script>
+</body>
+</html>
