@@ -13,7 +13,7 @@
             padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* 화면 상단에 위치 */
+            align-items: flex-start;
             min-height: 100vh;
         }
         #dday-app {
@@ -76,8 +76,19 @@
             color: #007bff;
         }
         .dday-text-finish {
-            color: #dc3545; /* D-DAY 당일은 빨간색으로 강조 */
+            color: #dc3545;
             font-size: 20px;
+        }
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        .delete-btn:hover {
+            color: #dc3545;
         }
     </style>
 </head>
@@ -96,10 +107,72 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 페이지 로드 시 로컬 저장소에서 데이터 불러오기
-            loadDDayList();
+        // --- 핵심 로직: D-Day 계산 및 포맷 ---
+        function calculateAndFormatDDay(targetDateStr) {
+            const targetDate = new Date(targetDateStr);
+            const today = new Date();
             
+            today.setHours(0, 0, 0, 0); 
+            targetDate.setHours(0, 0, 0, 0);
+
+            const timeDifference = targetDate.getTime() - today.getTime();
+            const oneDay = 1000 * 60 * 60 * 24; 
+            const daysDifference = Math.ceil(timeDifference / oneDay);
+
+            if (daysDifference > 0) {
+                return { text: `D-${daysDifference}`, isToday: false };
+            } else if (daysDifference === 0) {
+                return { text: `D-DAY 🎉`, isToday: true };
+            } else {
+                return { text: `D+${Math.abs(daysDifference)}`, isToday: false };
+            }
+        }
+
+        // --- 화면 표시 및 DOM 조작 ---
+        function renderDDayList() {
+            const listContainer = document.getElementById('dday-list');
+            listContainer.innerHTML = ''; // 목록을 비우고 다시 그립니다.
+            
+            const savedList = JSON.parse(localStorage.getItem('ddayList') || '[]');
+            
+            savedList.forEach((item, index) => {
+                const { text, isToday } = calculateAndFormatDDay(item.date);
+                
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <span>${item.name} (${item.date})</span>
+                    <div>
+                        <span class="dday-result ${isToday ? 'dday-text-finish' : ''}">${text}</span>
+                        <button class="delete-btn" data-index="${index}">삭제</button>
+                    </div>
+                `;
+                listContainer.appendChild(listItem);
+            });
+        }
+
+        // --- LocalStorage (저장 및 삭제 기능) ---
+        function saveDDay(newDDay) {
+            let list = JSON.parse(localStorage.getItem('ddayList') || '[]');
+            
+            // 중복 확인은 생략하고 새 항목을 추가합니다.
+            list.push(newDDay);
+            localStorage.setItem('ddayList', JSON.stringify(list));
+            renderDDayList();
+        }
+
+        function deleteDDay(index) {
+            let list = JSON.parse(localStorage.getItem('ddayList') || '[]');
+            list.splice(index, 1); // 해당 인덱스의 항목 삭제
+            localStorage.setItem('ddayList', JSON.stringify(list));
+            renderDDayList(); // 목록 다시 렌더링
+        }
+        
+        // --- 이벤트 리스너 설정 (버튼 클릭) ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. 페이지 로드 시 기존 목록을 화면에 표시
+            renderDDayList(); 
+
+            // 2. 추가 버튼 클릭 이벤트
             document.getElementById('add-button').addEventListener('click', function() {
                 const eventName = document.getElementById('event-name').value.trim();
                 const targetDateStr = document.getElementById('target-date').value;
@@ -109,11 +182,23 @@
                     return;
                 }
                 
-                // 새로운 D-Day 항목 객체 생성
-                const newDDay = {
-                    name: eventName,
-                    date: targetDateStr
-                };
+                const newDDay = { name: eventName, date: targetDateStr };
+                saveDDay(newDDay); // 저장 및 화면 업데이트
+                
+                // 입력 필드 초기화
+                document.getElementById('event-name').value = '';
+                document.getElementById('target-date').value = '';
+            });
 
-                // 로컬 저장소에 저장
-                save
+            // 3. 삭제 버튼 위임 이벤트 (동적으로 생성되는 버튼 처리를 위해)
+            document.getElementById('dday-list').addEventListener('click', function(e) {
+                if (e.target.classList.contains('delete-btn')) {
+                    const index = parseInt(e.target.dataset.index);
+                    deleteDDay(index);
+                }
+            });
+        });
+        
+    </script>
+</body>
+</html>
