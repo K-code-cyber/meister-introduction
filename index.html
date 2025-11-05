@@ -2,111 +2,118 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>대구소프트웨어마이스터고 지원서 - 김경호</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 D-Day 계산기</title>
+    
     <style>
         body {
-          font-family: "Arial", sans-serif;
-          max-width: 800px;
-          margin: 50px auto;
-          padding: 20px;
-          line-height: 1.6;
-          background: #f4f6f8;
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 화면 상단에 위치 */
+            min-height: 100vh;
         }
-        h1 {
-          font-size: 48px;
-          text-align: center;
-          color: #2c3e50;
-          font-weight: bold;
-          margin-bottom: 40px;
-        }
-        section {
-          background: white;
-          padding: 20px;
-          margin-bottom: 20px;
-          border-radius: 12px;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-          overflow: hidden;
+        #dday-app {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
         }
         h2 {
-          color: #2980b9;
-          margin-bottom: 10px;
+            color: #333;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
         }
-        button {
-          padding: 10px 20px;
-          font-size: 24px;
-          cursor: pointer;
-          border: none;
-          border-radius: 8px;
-          background-color: #3498db;
-          color: white;
-          margin-top: 10px;
-          transition: background 0.3s;
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
         }
-        button:hover {
-          background-color: #2980b9;
+        .input-container input, .input-container button {
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 16px;
         }
-        .hidden {
-          display: none;
-          margin-top: 10px;
-          padding: 10px;
-          background-color: #ecf0f1;
-          border-radius: 8px;
-          animation: fadeIn 0.5s ease-in-out;
+        .input-container button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-        img.profile {
-          display: block;
-          max-width: 150px;
-          border-radius: 50%;
-          margin: 0 auto 15px auto;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        .input-container button:hover {
+            background-color: #0056b3;
         }
-
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
+        #dday-list {
+            list-style: none;
+            padding: 0;
+        }
+        #dday-list li {
+            background-color: #e9ecef;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        #dday-list li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .dday-result {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .dday-text-finish {
+            color: #dc3545; /* D-DAY 당일은 빨간색으로 강조 */
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
-<h1>대구소프트웨어마이스터고 지원서</h1>
 
-<section>
-    <img src="profile.jpg" alt="프로필 사진" class="profile">
-    <h2>기본 정보</h2>
-    <p><strong>이름:</strong> 김경호</p>
-    <p><strong>지원 분야:</strong> 소프트웨어 개발</p>
-</section>
-
-<section>
-    <h2>자기소개</h2>
-    <button onclick="toggleContent('introContent')">자기소개 보기</button>
-    <div id="introContent" class="hidden">
-        안녕하세요, 저는 문제 해결과 개발에 관심이 많은 학생입니다.<br>
-        마이스터고에서 전문 기술을 배우고 성장하고 싶습니다.
-    </div>
-</section>
-
-<section>
-    <h2>경험 및 활동</h2>
-    <button onclick="toggleContent('experienceContent')">경험 보기</button>
-    <div id="experienceContent" class="hidden">
-        <ul>
-            <li>파이썬으로 간단한 게임 제작</li>
-            <li>웹사이트 기본 구조(HTML, CSS, JS) 학습</li>
-            <li>GitHub를 활용한 프로젝트 관리 경험</li>
+    <div id="dday-app">
+        <h2>나만의 D-Day 계산기 📅</h2>
+        <div class="input-container">
+            <input type="text" id="event-name" placeholder="이벤트 이름 (예: 시험, 여행)">
+            <input type="date" id="target-date">
+            <button id="add-button">D-Day 추가하기</button>
+        </div>
+        
+        <ul id="dday-list">
         </ul>
     </div>
-</section>
 
-<script>
-    function toggleContent(id) {
-      const element = document.getElementById(id);
-      if (element.style.display === "none" || element.style.display === "") {
-        element.style.display = "block";
-      } else {
-        element.style.display = "none";
-      }
-    }
-</script>
-</body>
-</html>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 페이지 로드 시 로컬 저장소에서 데이터 불러오기
+            loadDDayList();
+            
+            document.getElementById('add-button').addEventListener('click', function() {
+                const eventName = document.getElementById('event-name').value.trim();
+                const targetDateStr = document.getElementById('target-date').value;
+
+                if (!eventName || !targetDateStr) {
+                    alert("이벤트 이름과 날짜를 모두 입력해주세요.");
+                    return;
+                }
+                
+                // 새로운 D-Day 항목 객체 생성
+                const newDDay = {
+                    name: eventName,
+                    date: targetDateStr
+                };
+
+                // 로컬 저장소에 저장
+                save
