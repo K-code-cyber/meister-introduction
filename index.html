@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D-Day 계산기 2차 수정본</title>
+    <title>D-Day 계산기 3차 수정본</title>
     
     <style>
         body {
@@ -24,6 +24,8 @@
             max-width: 450px;
             width: 100%;
             text-align: center;
+            z-index: 10; /* 다른 요소 위에 표시 */
+            position: relative;
         }
         h2 {
             color: #333;
@@ -90,12 +92,56 @@
         .delete-btn:hover {
             color: #dc3545;
         }
+        /* made by kkh 문구를 오른쪽 아래에 고정 */
+        #footer-note {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #999;
+            z-index: 100; /* 최상단에 표시 */
+        }
+
+        /* 하트 효과를 위한 오버레이 스타일 */
+        #heart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* 클릭 이벤트가 하트로 전달되지 않도록 */
+            z-index: 5;
+            overflow: hidden;
+            display: none; /* 초기에는 숨김 */
+        }
+        
+        /* 하트 애니메이션 정의 */
+        @keyframes fall {
+            0% {
+                transform: translate(0, -100px) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(0, 100vh) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* 하트 스타일 */
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            color: #ff69b4; /* 핫핑크 */
+            animation: fall 10s linear infinite;
+        }
     </style>
 </head>
 <body>
+    
+    <div id="heart-overlay"></div>
 
     <div id="dday-app">
-        <h2>D-Day 계산기 📅2차 수정본</h2>
+        <h2>D-Day 계산기 📅3차 수정본</h2>
         <div class="input-container">
             <input type="text" id="event-name" placeholder="이벤트 이름 (예: 시험, 여행)">
             <input type="date" id="target-date">
@@ -104,6 +150,10 @@
         
         <ul id="dday-list">
         </ul>
+    </div>
+    
+    <div id="footer-note">
+        <p>made by kkh</p>
     </div>
 
     <script>
@@ -127,6 +177,53 @@
                 return { text: `D+${Math.abs(daysDifference)}`, isToday: false };
             }
         }
+        
+        // --- 하트 애니메이션 생성/제어 함수 ---
+        function createHeart(overlay) {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '💖'; 
+            heart.style.left = `${Math.random() * 100}vw`; // 무작위 X축 위치
+            heart.style.animationDelay = `-${Math.random() * 5}s`; // 무작위 딜레이
+            heart.style.animationDuration = `${10 + Math.random() * 5}s`; // 무작위 속도
+            overlay.appendChild(heart);
+            
+            // 애니메이션 종료 후 DOM에서 제거하여 메모리 관리
+            heart.addEventListener('animationend', () => {
+                heart.remove();
+            });
+        }
+        
+        let heartInterval = null; // 인터벌 ID를 저장할 변수
+
+        function startHeartEffect() {
+            const overlay = document.getElementById('heart-overlay');
+            if (!overlay) return;
+            
+            overlay.style.display = 'block';
+            
+            // 이미 실행 중이면 중복 실행 방지
+            if (heartInterval) return; 
+
+            // 100ms마다 새로운 하트 생성
+            heartInterval = setInterval(() => {
+                createHeart(overlay);
+            }, 100);
+        }
+
+        function stopHeartEffect() {
+            const overlay = document.getElementById('heart-overlay');
+            if (!overlay) return;
+            
+            overlay.style.display = 'none';
+            
+            if (heartInterval) {
+                clearInterval(heartInterval);
+                heartInterval = null;
+            }
+            // 기존 하트 요소들도 모두 제거
+            overlay.innerHTML = '';
+        }
 
         // --- 화면 표시 및 DOM 조작 ---
         function renderDDayList() {
@@ -135,8 +232,16 @@
             
             const savedList = JSON.parse(localStorage.getItem('ddayList') || '[]');
             
+            // 1월 23일 항목이 있는지 확인하는 플래그
+            let isJan23Present = false;
+            
             savedList.forEach((item, index) => {
                 const { text, isToday } = calculateAndFormatDDay(item.date);
+                
+                // 1월 23일(YYYY-01-23)인지 확인
+                if (item.date && item.date.endsWith('-01-23')) {
+                    isJan23Present = true;
+                }
                 
                 const listItem = document.createElement('li');
                 listItem.innerHTML = `
@@ -148,13 +253,19 @@
                 `;
                 listContainer.appendChild(listItem);
             });
+            
+            // 렌더링 후 하트 효과 적용
+            if (isJan23Present) {
+                startHeartEffect();
+            } else {
+                stopHeartEffect();
+            }
         }
 
         // --- LocalStorage (저장 및 삭제 기능) ---
         function saveDDay(newDDay) {
             let list = JSON.parse(localStorage.getItem('ddayList') || '[]');
             
-            // 중복 확인은 생략하고 새 항목을 추가합니다.
             list.push(newDDay);
             localStorage.setItem('ddayList', JSON.stringify(list));
             renderDDayList();
@@ -162,7 +273,7 @@
 
         function deleteDDay(index) {
             let list = JSON.parse(localStorage.getItem('ddayList') || '[]');
-            list.splice(index, 1); // 해당 인덱스의 항목 삭제
+            list.splice(index, 1);
             localStorage.setItem('ddayList', JSON.stringify(list));
             renderDDayList(); // 목록 다시 렌더링
         }
@@ -182,6 +293,8 @@
                     return;
                 }
                 
+                // 날짜 포맷이 YYYY-MM-DD 형식인지 확인 (Date 입력 필드를 사용하므로 보통은 유효)
+                
                 const newDDay = { name: eventName, date: targetDateStr };
                 saveDDay(newDDay); // 저장 및 화면 업데이트
                 
@@ -190,7 +303,7 @@
                 document.getElementById('target-date').value = '';
             });
 
-            // 3. 삭제 버튼 위임 이벤트 (동적으로 생성되는 버튼 처리를 위해)
+            // 3. 삭제 버튼 위임 이벤트
             document.getElementById('dday-list').addEventListener('click', function(e) {
                 if (e.target.classList.contains('delete-btn')) {
                     const index = parseInt(e.target.dataset.index);
@@ -199,18 +312,6 @@
             });
         });
         
-    </script>
-</body>
-</html>
-
-
-
-    <div id="footer-note">
-        <p>made by kkh</p>
-    </div>
-    
-    <script>
-    // ... (기존 스크립트 내용)
     </script>
 </body>
 </html>
