@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎳 볼링 내기 정산 계산기</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎳 볼링 내기 정산 계산기</h1>
+
+        <section id="setup">
+            <h2>⚙️ 기본 설정</h2>
+            <div class="input-group">
+                <label for="totalCost">✅ 총 볼링 비용 (신발 대여료 제외, 라운드당 비용):</label>
+                <input type="number" id="totalCost" value="15000" min="0">
+            </div>
+            <div class="input-group">
+                <label for="playerCount">🧑‍🤝‍🧑 총 참가자 수:</label>
+                <input type="number" id="playerCount" value="4" min="2">
+            </div>
+            <div class="input-group">
+                <label for="roundCount">📍 총 라운드 수:</label>
+                <input type="number" id="roundCount" value="3" min="1">
+            </div>
+            <button onclick="generateInputFields()">입력 필드 생성/초기화</button>
+        </section>
+
+        <hr>
+
+        <section id="inputs">
+            <h2>📝 참가자 및 라운드 정보</h2>
+            <div id="input-container">
+                </div>
+        </section>
+
+        <button class="calculate-btn" onclick="calculateSettlement()">💰 정산 결과 보기</button>
+
+        <hr>
+
+        <section id="results">
+            <h2>📊 정산 결과 요약</h2>
+            <p>신발 대여료 (인당 1,000원): <span id="shoeFeeTotal">0</span>원</p>
+            <p>총 내기 금액 (볼링장 비용): <span id="totalGameCost">0</span>원</p>
+            <div id="final-settlement">
+                </div>
+        </section>
+    </div>
+
+    <script src="calculator.js"></script>
+</body>
+</html>
