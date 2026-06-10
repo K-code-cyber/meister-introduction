@@ -1,0 +1,182 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Malgun Gothic', dotum, sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    padding: 20px 10px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+header h1 {
+    color: #1e3c72;
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+header p {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+/* 컨트롤 패널 */
+.control-panel {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border: 1px solid #e2e8f0;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+input[type="number"] {
+    width: 70px;
+    padding: 6px;
+    font-size: 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.radio-group {
+    display: flex;
+    gap: 15px;
+    font-weight: normal;
+}
+
+.radio-group label {
+    cursor: pointer;
+}
+
+#btn-arrange {
+    width: 100%;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#btn-arrange:hover {
+    opacity: 0.9;
+}
+
+/* 교실 레이아웃 */
+.classroom {
+    border: 3px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 20px;
+    background: #fafafa;
+}
+
+.blackboard {
+    width: 60%;
+    max-width: 300px;
+    background: #2e5a44;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin: 0 auto 30px auto;
+    border-radius: 4px;
+    font-weight: bold;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* 자리 배치 그리드 시스템 */
+.seat-layout {
+    display: grid;
+    gap: 15px;
+    justify-content: center;
+}
+
+/* 개인석 모드: 기본 5줄 배치 */
+.grid-single {
+    grid-template-columns: repeat(5, minmax(60px, 1fr));
+}
+
+/* 짝꿍석 모드: 기본 3줄(분단) 쌍 배치 */
+.grid-pair {
+    grid-template-columns: repeat(3, minmax(130px, 1fr));
+}
+
+/* 책상 공통 디자인 */
+.seat {
+    background: #e2e8f0;
+    border: 2px solid #94a3b8;
+    border-radius: 6px;
+    padding: 12px 5px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.seat:hover {
+    background: #cbd5e1;
+}
+
+.seat.empty {
+    background: #f1f5f9;
+    border-style: dashed;
+    color: #94a3b8;
+}
+
+/* 2인용 책상 묶음 */
+.desk-pair {
+    display: flex;
+    gap: 4px;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.desk-pair .seat {
+    flex: 1;
+    border: 1px solid #94a3b8;
+}
+
+/* 애니메이션 효과 */
+.animate-pop {
+    animation: pop 0.3s ease-out;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* 화면이 작을 때 처리 (모바일 반응형) */
+@media (max-width: 600px) {
+    .grid-single { grid-template-columns: repeat(4, 1fr); }
+    .grid-pair { grid-template-columns: repeat(2, 1fr); }
+}
