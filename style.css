@@ -52,6 +52,7 @@ header p {
     gap: 10px;
     font-size: 0.95rem;
     font-weight: bold;
+    flex-wrap: wrap;
 }
 
 input[type="number"] {
@@ -61,6 +62,21 @@ input[type="number"] {
     border: 1px solid #cbd5e1;
     border-radius: 4px;
     text-align: center;
+}
+
+input[type="text"] {
+    flex: 1;
+    min-width: 150px;
+    padding: 6px 10px;
+    font-size: 0.95rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+}
+
+.help-text {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: normal;
 }
 
 .radio-group {
@@ -109,22 +125,20 @@ input[type="number"] {
 /* 격자 배치 */
 .seat-layout {
     display: grid;
-    gap: 20px 15px; /* 세로 간격 20px, 가로 간격 15px */
+    gap: 20px 15px;
     justify-content: center;
 }
 
-/* 개인석: 가로 5줄 딱 맞춰 배치 */
 .grid-single {
     grid-template-columns: repeat(5, 70px);
 }
 
-/* 짝꿍석: 가로 3분단 배치 (각 분단은 2개의 자리가 묶임) */
 .grid-pair {
-    grid-template-columns: repeat(3, 145px); /* 분단별 너비 고정 */
-    gap: 25px 30px; /* 분단 사이 통로 넓히기 */
+    grid-template-columns: repeat(3, 145px);
+    gap: 25px 30px;
 }
 
-/* 개별 숫자 박스 (책상) */
+/* 개별 숫자 박스 */
 .seat {
     width: 70px;
     height: 55px;
@@ -135,15 +149,21 @@ input[type="number"] {
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 1.2rem; /* 숫자가 명확히 보이도록 크기 키움 */
+    font-size: 1.2rem;
     color: #1e293b;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* 짝꿍석 묶음 프레임 */
+/* 👓 앞자리 지정 학생 전용 특별 스타일 */
+.seat.highlight {
+    background: #edf2ff;
+    border: 2.5px solid #3b5bdb;
+    color: #3b5bdb;
+}
+
 .desk-pair {
     display: flex;
-    gap: 5px; /* 책상 두 개 사이 밀착 */
+    gap: 5px;
 }
 
 .seat.empty {
