@@ -11,20 +11,20 @@
     <div class="container">
         <header>
             <h1>✨ 학교 랜덤 자리배치 프로그램 ✨</h1>
-            <p>공정하고 빠르게 우리 반 자리를 배치해보세요!</p>
+            <p>교탁 기준 격자형 랜덤 자리 배치</p>
         </header>
 
         <section class="control-panel">
             <div class="input-group">
-                <label for="total-students">▶️ 총 인원수 입력:</label>
-                <input type="number" id="total-students" min="1" value="25" placeholder="예: 25"> 명
+                <label for="total-students">▶️ 총 인원수:</label>
+                <input type="number" id="total-students" min="1" value="24" placeholder="24"> 명
             </div>
 
             <div class="input-group">
-                <label>▶️ 배정 방식 선택:</label>
+                <label>▶️ 배정 방식:</label>
                 <div class="radio-group">
-                    <label><input type="radio" name="seat-type" value="single" checked> 개인석 (1인용)</label>
-                    <label><input type="radio" name="seat-type" value="pair"> 짝꿍석 (2인용)</label>
+                    <label><input type="radio" name="seat-type" value="single" checked> 개인석 (5열 세로배치)</label>
+                    <label><input type="radio" name="seat-type" value="pair"> 짝꿍석 (3분단 배치)</label>
                 </div>
             </div>
 
@@ -32,9 +32,8 @@
         </section>
 
         <main class="classroom">
-            <div class="blackboard">📋 교 탁 (앞)</div>
-            <div id="seat-layout" class="seat-layout">
-                </div>
+            <div class="blackboard">교 탁 (앞)</div>
+            <div id="seat-layout" class="seat-layout"></div>
         </main>
     </div>
 
@@ -45,64 +44,5 @@
             const seatType = document.querySelector('input[name="seat-type"]:checked').value;
             const layoutContainer = document.getElementById('seat-layout');
 
-            // 입력값 검증
             if (isNaN(totalStudents) || totalStudents <= 0) {
-                alert('❌ 올바른 인원수를 입력해주세요 (1명 이상).');
-                return;
-            }
-
-            // 1부터 N까지 번호 생성 후 셔플 (랜덤 정렬)
-            let students = Array.from({ length: totalStudents }, (_, i) => i + 1);
-            for (let i = students.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [students[i], students[j]] = [students[j], students[i]];
-            }
-
-            // 기존 배치 레이아웃 비우기
-            layoutContainer.innerHTML = '';
-            
-            if (seatType === 'single') {
-                // 개인석 모드: CSS Grid로 5열 정렬
-                layoutContainer.className = 'seat-layout grid-single';
-                
-                students.forEach(num => {
-                    const seat = document.createElement('div');
-                    seat.className = 'seat animate-pop';
-                    seat.innerText = `${num}번`;
-                    layoutContainer.appendChild(seat);
-                });
-            } else {
-                // 짝꿍석 모드: 2개씩 묶어서 책상 배치
-                layoutContainer.className = 'seat-layout grid-pair';
-                
-                for (let i = 0; i < students.length; i += 2) {
-                    const desk = document.createElement('div');
-                    desk.className = 'desk-pair animate-pop';
-
-                    // 왼쪽 짝꿍
-                    const seat1 = document.createElement('div');
-                    seat1.className = 'seat';
-                    seat1.innerText = `${students[i]}번`;
-                    desk.appendChild(seat1);
-
-                    // 오른쪽 짝꿍 (홀수일 경우 처리)
-                    const seat2 = document.createElement('div');
-                    if (students[i + 1]) {
-                        seat2.className = 'seat';
-                        seat2.innerText = `${students[i + 1]}번`;
-                    } else {
-                        seat2.className = 'seat empty';
-                        seat2.innerText = '혼자';
-                    }
-                    desk.appendChild(seat2);
-
-                    layoutContainer.appendChild(desk);
-                }
-            }
-        }
-
-        // 페이지 로드 시 첫 배치 자동 실행
-        window.onload = arrangeSeats;
-    </script>
-</body>
-</html>
+                alert('❌ 올바른 인원수를 입력
