@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏫 학교 랜덤 자리배치 프로그램</title>
+    <title>학교 랜덤 자리배치 프로그램</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="container">
         <header>
-            <h1>✨ 학교 랜덤 자리배치 프로그램 ✨</h1>
-            <p>교탁 기준 격자형 랜덤 자리 배치 (앞자리 우선 배정 기능 포함)</p>
+            <h1> 학교 랜덤 자리배치 프로그램 </h1>
+            <p>교탁 기준 격자형 랜덤 자리 배치 </p>
         </header>
 
         <section class="control-panel">
             <div class="input-group">
-                <label for="total-students">▶️ 총 인원수:</label>
+                <label for="total-students"> 총 인원수:</label>
                 <input type="number" id="total-students" min="1" value="24"> 명
             </div>
 
@@ -27,14 +27,14 @@
             </div>
 
             <div class="input-group">
-                <label>▶️ 배정 방식:</label>
+                <label> 배정 방식:</label>
                 <div class="radio-group">
                     <label><input type="radio" name="seat-type" value="single" checked> 개인석 (5열 세로배치)</label>
                     <label><input type="radio" name="seat-type" value="pair"> 짝꿍석 (3분단 배치)</label>
                 </div>
             </div>
 
-            <button id="btn-arrange" onclick="arrangeSeats()">🎉 자리 배치하기</button>
+            <button id="btn-arrange" onclick="arrangeSeats()"> 자리 배치하기</button>
         </section>
 
         <main class="classroom">
@@ -51,34 +51,27 @@
             const layoutContainer = document.getElementById('seat-layout');
 
             if (isNaN(totalStudents) || totalStudents <= 0) {
-                alert('❌ 올바른 인원수를 입력해주세요.');
+                alert(' 올바른 인원수를 입력해주세요.');
                 return;
             }
 
-            // 앞자리 배정할 학생 배열 추출 및 예외처리
             let frontStudents = frontStudentsInput.split(',')
                 .map(num => parseInt(num.trim()))
                 .filter(num => !isNaN(num) && num > 0 && num <= totalStudents);
 
-            // 중복 번호 제거
             frontStudents = [...new Set(frontStudents)];
 
-            // 일반 배정 학생 리스트 생성 (전체 학생 - 앞자리 학생)
             let regularStudents = [];
             for (let i = 1; i <= totalStudents; i++) {
                 if (!frontStudents.includes(i)) {
                     regularStudents.push(i);
                 }
-            }
 
-            // 일반 학생들만 랜덤 셔플
             for (let i = regularStudents.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [regularStudents[i], regularStudents[j]] = [regularStudents[j], regularStudents[i]];
             }
 
-            // 최종 자리 리스트 생성 (앞자리 학생들을 무조건 리스트 맨 앞으로!)
-            // 배열 배치상 맨 앞 인덱스들이 교탁 바로 앞줄에 위치하게 됨
             let finalSeating = [...frontStudents, ...regularStudents];
 
             layoutContainer.innerHTML = '';
@@ -89,7 +82,6 @@
                 finalSeating.forEach(num => {
                     const seat = document.createElement('div');
                     seat.className = 'seat animate-pop';
-                    // 앞자리 배정된 학생은 눈에 띄게 스타일링 추가
                     if (frontStudents.includes(num)) {
                         seat.classList.add('highlight');
                     }
@@ -103,16 +95,13 @@
                     const desk = document.createElement('div');
                     desk.className = 'desk-pair animate-pop';
 
-                    // 왼쪽 자리
                     const seat1 = document.createElement('div');
                     seat1.className = 'seat';
                     seat1.innerText = finalSeating[i];
                     if (frontStudents.includes(finalSeating[i])) {
                         seat1.classList.add('highlight');
                     }
-                    desk.appendChild(seat1);
-
-                    // 오른쪽 자리
+                
                     const seat2 = document.createElement('div');
                     seat2.className = 'seat';
                     if (finalSeating[i + 1]) {
