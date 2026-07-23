@@ -1,82 +1,330 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>교실 CO2 포집 및 에너지 효율 시뮬레이터</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- 차트 라이브러리 (Chart.js) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        body {
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        header h1 {
+            color: #1a365d;
+            margin: 0 0 8px 0;
+            font-size: 24px;
+        }
+        header p {
+            color: #718096;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        /* 시뮬레이션 설정 박스 */
+        .config-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .config-card h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #2d3748;
+            font-size: 18px;
+        }
+        .input-group {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .input-group label {
+            width: 160px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .input-group input {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .btn-start {
+            margin-top: 10px;
+            padding: 6px 16px;
+            background-color: #edf2f7;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .btn-start:hover {
+            background-color: #e2e8f0;
+        }
+
+        /* 실시간 상태 표시 */
+        .status-section {
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        .status-item {
+            margin-bottom: 12px;
+        }
+        .status-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+        .status-value {
+            font-size: 14px;
+            color: #4a5568;
+        }
+
+        /* 차트 영역 */
+        .chart-container {
+            position: relative;
+            margin-bottom: 30px;
+            height: 250px;
+        }
+        .chart-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        /* 성적표 영역 */
+        .report-section {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .report-section h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .report-item {
+            margin-bottom: 10px;
+        }
+        .report-label {
+            font-weight: bold;
+            font-size: 14px;
+            color: #2d3748;
+        }
+        .report-value {
+            font-size: 14px;
+            color: #4a5568;
+            margin-top: 2px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #a0aec0;
+        }
+    </style>
 </head>
 <body>
+
+<div class="container">
     <header>
         <h1>교실 CO2 포집 및 에너지 효율 시뮬레이터</h1>
         <p>아민 함침 실리카 필터기반 친환경 대기 제어 시스템 가상 검증 디스플레이</p>
     </header>
 
-    <main class="container">
-        <section class="card control-panel">
-            <h2>시뮬레이션 설정</h2>
-            <div class="input-group">
-                <label for="students">학생 수 (명):</label>
-                <input type="number" id="students" value="30" min="1" max="50">
-            </div>
-            <div class="input-group">
-                <label for="hours">시뮬레이션 시간 (시간):</label>
-                <input type="number" id="hours" value="8" min="1" max="24">
-            </div>
-            <button id="runBtn" class="btn">시뮬레이션 시작</button>
-        </section>
+    <!-- 시뮬레이션 설정 -->
+    <div class="config-card">
+        <h3>시뮬레이션 설정</h3>
+        <div class="input-group">
+            <label for="students">학생 수 (명):</label>
+            <input type="number" id="students" value="30" min="1">
+        </div>
+        <div class="input-group">
+            <label for="simHours">시뮬레이션 시간 (시간):</label>
+            <input type="number" id="simHours" value="8" min="1" max="24">
+        </div>
+        <button class="btn-start" onclick="runSimulation()">시뮬레이션 시작</button>
+    </div>
 
-        <section class="dashboard">
-            <div class="status-card">
-                <h3>현재 CO₂ 농도</h3>
-                <p id="co2Display"><span class="value">400</span> ppm</p>
-            </div>
-            <div class="status-card">
-                <h3>필터 포집 용량</h3>
-                <p id="filterDisplay"><span class="value">0</span> %</p>
-            </div>
-            <div class="status-card">
-                <h3>현재 시스템 상태</h3>
-                <p id="statusDisplay"><span class="value badge grey">대기 중</span></p>
-            </div>
-        </section>
+    <!-- 상태 출력 -->
+    <div class="status-section">
+        <div class="status-item">
+            <div class="status-title">현재 CO₂ 농도</div>
+            <div class="status-value" id="currentCo2">400 ppm</div>
+        </div>
+        <div class="status-item">
+            <div class="status-title">필터 포집 용량</div>
+            <div class="status-value" id="filterCap">0 %</div>
+        </div>
+        <div class="status-item">
+            <div class="status-title">현재 시스템 상태</div>
+            <div class="status-value" id="sysStatus">대기 중</div>
+        </div>
+    </div>
 
-        <section class="charts-container">
-            <div class="card chart-card">
-                <h3>시간별 실내 CO₂ 농도 변화</h3>
-                <canvas id="co2Chart"></canvas>
-            </div>
-            <div class="card chart-card">
-                <h3>누적 에너지 소비량 비교</h3>
-                <canvas id="energyChart"></canvas>
-            </div>
-        </section>
+    <!-- 차트 1: 시간별 실내 CO2 농도 변화 -->
+    <div class="chart-title">시간별 실내 CO₂ 농도 변화</div>
+    <div class="chart-container">
+        <canvas id="co2Chart"></canvas>
+    </div>
+
+    <!-- 차트 2: 누적 에너지 소비량 비교 -->
+    <div class="chart-title">누적 에너지 소비량 비교</div>
+    <div class="chart-container">
+        <canvas id="energyChart"></canvas>
+    </div>
+
+    <!-- 성적표 -->
+    <div class="report-section">
+        <h3>시뮬레이션 분석 성적표</h3>
+        <div class="report-item">
+            <div class="report-label">기존 환기 방식 에너지</div>
+            <div class="report-value" id="ventEnergy">- kWh</div>
+        </div>
+        <div class="report-item">
+            <div class="report-label">우리 필터 시스템 에너지</div>
+            <div class="report-value" id="filterEnergy">- kWh</div>
+        </div>
+        <div class="report-item">
+            <div class="report-label">최종 에너지 절감률</div>
+            <div class="report-value" id="savingRate">- %</div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    © 2026 고등학교 R&E 소논문 프로젝트 - 정윤 & 경호 팀
+</footer>
+
+<script>
+    let co2ChartInstance = null;
+    let energyChartInstance = null;
+
+    function runSimulation() {
+        const students = parseInt(document.getElementById('students').value) || 30;
+        const hours = parseInt(document.getElementById('simHours').value) || 8;
+
+        const labels = ['0시간'];
+        const co2VentData = [400];
+        const co2FilterData = [400];
         
-        <section id="reportCard" class="card report-card hidden">
-            <h2>시뮬레이션 분석 성적표</h2>
-            <div class="report-grid">
-                <div class="report-item">
-                    <h4>기존 환기 방식 에너지</h4>
-                    <p id="energyA">- kWh</p>
-                </div>
-                <div class="report-item">
-                    <h4>우리 필터 시스템 에너지</h4>
-                    <p id="energyB">- kWh</p>
-                </div>
-                <div class="report-item highlight">
-                    <h4>최종 에너지 절감률</h4>
-                    <p id="savingsRate">- %</p>
-                </div>
-            </div>
-        </section>
-    </main>
+        const energyVentData = [0];
+        const energyFilterData = [0];
 
-    <footer>
-        <p>© 2026 고등학교 R&E 소논문 프로젝트 - 정윤 & 경호 팀</p>
-    </footer>
+        // 물리 모델 파라미터 (교실 환경 모사)
+        let co2Vent = 400;
+        let co2Filter = 400;
+        let totalVentEnergy = 0;
+        let totalFilterEnergy = 0;
+        let filterCapUsed = 0;
 
-    <script src="script.js"></script>
+        for (let h = 1; h <= hours; h++) {
+            labels.push(`${h}시간`);
+
+            // 1. 기존 환기 방식: 사람이 늘어나면 CO2 급증 -> 환기팬/열교환기 강하게 작동 (kWh 소비)
+            co2Vent += students * 15 - 350; 
+            if (co2Vent < 500) co2Vent = 500; 
+            if (co2Vent > 1200) co2Vent = 1200;
+            totalVentEnergy += (co2Vent / 1000) * 0.8; // 환기량 비례 전력
+
+            // 2. 아민 함침 실리카 필터 방식: 포집을 통해 일정 농도 유지 + 저전력 소모
+            co2Filter += students * 12 - 320;
+            if (co2Filter < 450) co2Filter = 450;
+            if (co2Filter > 900) co2Filter = 900;
+            totalFilterEnergy += 0.25; // 필터 팬 저전력 운전
+            filterCapUsed += (students * 0.3); // 필터 용량 소모
+            if (filterCapUsed > 100) filterCapUsed = 100;
+
+            co2VentData.push(Math.round(co2Vent));
+            co2FilterData.push(Math.round(co2Filter));
+            energyVentData.push(parseFloat(totalVentEnergy.toFixed(2)));
+            energyFilterData.push(parseFloat(totalFilterEnergy.toFixed(2)));
+        }
+
+        // 실시간 상태 업데이트
+        document.getElementById('currentCo2').innerText = `${co2FilterData[co2FilterData.length - 1]} ppm`;
+        document.getElementById('filterCap').innerText = `${Math.min(100, Math.round(filterCapUsed))} %`;
+        document.getElementById('sysStatus').innerText = '시뮬레이션 완료 (가동 중)';
+
+        // 성적표 업데이트
+        const finalVentE = energyVentData[energyVentData.length - 1];
+        const finalFilterE = energyFilterData[energyFilterData.length - 1];
+        const savingRate = (((finalVentE - finalFilterE) / finalVentE) * 100).toFixed(1);
+
+        document.getElementById('ventEnergy').innerText = `${finalVentE} kWh`;
+        document.getElementById('filterEnergy').innerText = `${finalFilterE} kWh`;
+        document.getElementById('savingRate').innerText = `${savingRate}% 절감`;
+
+        // 차트 그리기
+        renderCharts(labels, co2VentData, co2FilterData, energyVentData, energyFilterData);
+    }
+
+    function renderCharts(labels, co2Vent, co2Filter, energyVent, energyFilter) {
+        if (co2ChartInstance) co2ChartInstance.destroy();
+        if (energyChartInstance) energyChartInstance.destroy();
+
+        // 1. CO2 농도 차트
+        const ctx1 = document.getElementById('co2Chart').getContext('2d');
+        co2ChartInstance = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: '기존 환기 방식 (ppm)', data: co2Vent, borderColor: '#e53e3e', backgroundColor: '#e53e3e', fill: false, tension: 0.2 },
+                    { label: '아민 실리카 필터 방식 (ppm)', data: co2Filter, borderColor: '#3182ce', backgroundColor: '#3182ce', fill: false, tension: 0.2 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: false, min: 300 } }
+            }
+        });
+
+        // 2. 에너지 소비량 차트
+        const ctx2 = document.getElementById('energyChart').getContext('2d');
+        energyChartInstance = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: '기존 환기 소비 전력 (kWh)', data: energyVent, borderColor: '#dd6b20', backgroundColor: '#dd6b20', fill: false, tension: 0.2 },
+                    { label: '필터 시스템 소비 전력 (kWh)', data: energyFilter, borderColor: '#38a169', backgroundColor: '#38a169', fill: false, tension: 0.2 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+</script>
+
 </body>
 </html>
