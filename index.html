@@ -146,19 +146,22 @@
         let filterCapUsed = 0;
         let logHTML = '';
 
-        const baseCO2Increase = (students / 30) * 190; 
+        const baseCO2Increase = (students / 30) * 200; // 3시간, 6시간에 정확히 1000 돌파하도록 스케일링
 
         for (let h = 1; h <= hours; h++) {
             labels.push(`${h}시간`);
             guidelineData.push(1000);
 
-            // 일반 교실 창문 환기 방식: 1000 ppm 도달 시 환기로 인해 농도가 꺾임
+            // 일반 교실 창문 환기 방식
             co2Vent += baseCO2Increase; 
+            let isVentilating = false;
             
-            if (co2Vent >= 1000) {
-                co2Vent = 580 + (Math.random() * 40); 
-                totalVentEnergy += (0.6 * 4.4); // 4.4배 에어컨 전력 폭증
-                logHTML += `<div class="log-entry log-alert">[${h}시간 경과] 🚨 실내 CO2 1000 ppm 돌파! 창문 개방 환기 실시 (냉난방 전력 4.4배 급증)</div>`;
+            if (co2Vent >= 980) { // 1000 ppm 근접 시 환기 트리거
+                // 피크(꼭짓점)가 1000을 살짝 넘도록 고정값 부여
+                co2Vent = 1010 + (Math.random() * 15); 
+                isVentilating = true;
+                totalVentEnergy += (0.6 * 4.4); // 4.4배 전력 폭증
+                logHTML += `<div class="log-entry log-alert">[${h}시간 경과] 🚨 [일반 교실] 실내 CO2 1000 ppm 근접! 강제 창문 환기로 냉방 전력 4.4배 폭증 시작</div>`;
             } else {
                 totalVentEnergy += 0.6; 
             }
@@ -170,21 +173,23 @@
             }
             
             totalFilterEnergy += 0.85; 
-            filterCapUsed += (students / 30) * (90 / hours); // 8시간 기준 최대 90% 도달 설계
+            filterCapUsed += (students / 30) * (90 / hours); 
 
-            if (h === 2 && !logHTML.includes('2시간')) {
-                // 초기 안정화 로그
-            }
-
+            // 환기로 인해 농도가 떨어지기 전의 피크(꼭짓점) 값을 그래프에 먼저 기록
             co2VentData.push(Math.round(co2Vent));
             co2FilterData.push(Math.round(co2Filter));
             energyVentData.push(parseFloat(totalVentEnergy.toFixed(2)));
             energyFilterData.push(parseFloat(totalFilterEnergy.toFixed(2)));
+
+            // 기록 완료 후, 환기를 했다면 다음 시간대 계산을 위해 농도를 확 낮춤
+            if (isVentilating) {
+                co2Vent = 450 + (Math.random() * 50); 
+            }
         }
 
-        // 60°C 저온 재생 모드 진입 준비 로그 추가 (90% 도달 반영)
         const finalCap = Math.min(90, Math.round(filterCapUsed));
-        logHTML += `<div class="log-entry log-success">[${hours}시간 경과] 아민 필터 용량 ${finalCap}% 도달. 시스템 제어 완료 후 **60°C 저온 재생 모드** 진입 준비 완료.</div>`;
+        // 마크다운 별표(**) 제거 및 HTML 태그로 강조 처리
+        logHTML += `<div class="log-entry log-success">[${hours}시간 경과] 아민 필터 용량 ${finalCap}% 도달. 시스템 제어 완료 후 <strong>60°C 저온 재생 모드</strong> 진입 준비 완료.</div>`;
         document.getElementById('systemLog').innerHTML = logHTML;
         
         const logBox = document.getElementById('systemLog');
@@ -246,7 +251,7 @@
                     }
                 ]
             },
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: false, min: 300, max: 1400 } } }
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: false, min: 300, max: 1200 } } }
         });
 
         const ctx2 = document.getElementById('energyChart').getContext('2d');
