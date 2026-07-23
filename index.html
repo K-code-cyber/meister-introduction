@@ -1,1 +1,82 @@
 
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>교실 CO2 포집 및 에너지 효율 시뮬레이터</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>교실 CO2 포집 및 에너지 효율 시뮬레이터</h1>
+        <p>아민 함침 실리카 필터기반 친환경 대기 제어 시스템 가상 검증 디스플레이</p>
+    </header>
+
+    <main class="container">
+        <section class="card control-panel">
+            <h2>시뮬레이션 설정</h2>
+            <div class="input-group">
+                <label for="students">학생 수 (명):</label>
+                <input type="number" id="students" value="30" min="1" max="50">
+            </div>
+            <div class="input-group">
+                <label for="hours">시뮬레이션 시간 (시간):</label>
+                <input type="number" id="hours" value="8" min="1" max="24">
+            </div>
+            <button id="runBtn" class="btn">시뮬레이션 시작</button>
+        </section>
+
+        <section class="dashboard">
+            <div class="status-card">
+                <h3>현재 CO₂ 농도</h3>
+                <p id="co2Display"><span class="value">400</span> ppm</p>
+            </div>
+            <div class="status-card">
+                <h3>필터 포집 용량</h3>
+                <p id="filterDisplay"><span class="value">0</span> %</p>
+            </div>
+            <div class="status-card">
+                <h3>현재 시스템 상태</h3>
+                <p id="statusDisplay"><span class="value badge grey">대기 중</span></p>
+            </div>
+        </section>
+
+        <section class="charts-container">
+            <div class="card chart-card">
+                <h3>시간별 실내 CO₂ 농도 변화</h3>
+                <canvas id="co2Chart"></canvas>
+            </div>
+            <div class="card chart-card">
+                <h3>누적 에너지 소비량 비교</h3>
+                <canvas id="energyChart"></canvas>
+            </div>
+        </section>
+        
+        <section id="reportCard" class="card report-card hidden">
+            <h2>시뮬레이션 분석 성적표</h2>
+            <div class="report-grid">
+                <div class="report-item">
+                    <h4>기존 환기 방식 에너지</h4>
+                    <p id="energyA">- kWh</p>
+                </div>
+                <div class="report-item">
+                    <h4>우리 필터 시스템 에너지</h4>
+                    <p id="energyB">- kWh</p>
+                </div>
+                <div class="report-item highlight">
+                    <h4>최종 에너지 절감률</h4>
+                    <p id="savingsRate">- %</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 고등학교 R&E 소논문 프로젝트 - 정윤 & 경호 팀</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
