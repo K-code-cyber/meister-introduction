@@ -106,7 +106,7 @@
     <div class="report-section">
         <h3>시뮬레이션 분석 성적표</h3>
         <div class="report-item">
-            <div class="report-label">창문 환기 방식 누적 에너지 (냉난방 손실 포함)</div>
+            <div class="report-label">일반 창문 환기 방식 누적 에너지 (냉난방 손실 포함)</div>
             <div class="report-value" id="ventEnergy">- kWh</div>
         </div>
         <div class="report-item">
@@ -146,41 +146,34 @@
         let filterCapUsed = 0;
         let logHTML = '';
 
-        // [데이터 팩 1] 학생 1인당 분당 CO2 배출량 0.22L -> 시간당 13.06L (200m3 교실 기준 농도 증가 폭 스케일링)
-        const baseCO2Increase = (students / 30) * 180; 
+        const baseCO2Increase = (students / 30) * 190; 
 
         for (let h = 1; h <= hours; h++) {
             labels.push(`${h}시간`);
             guidelineData.push(1000);
 
-            // 밀폐 교실 기준 농도 급증
-            co2Vent += baseCO2Increase * 1.5; 
+            // 일반 교실 창문 환기 방식: 1000 ppm 도달 시 환기로 인해 농도가 꺾임
+            co2Vent += baseCO2Increase; 
             
             if (co2Vent >= 1000) {
-                // 환기 실시
-                co2Vent = 550 + (Math.random() * 50); 
-                // [데이터 팩 2] 밀폐 상태 대비 개문냉방 시 전력 소모 최대 4.4배 폭증
-                totalVentEnergy += (0.6 * 4.4); 
-                logHTML += `<div class="log-entry log-alert">[${h}시간 경과] 🚨 실내 CO2 1000 ppm 돌파! 강제 창문 개방 환기 실시 (에어컨 냉방 전력 4.4배 폭증 발생)</div>`;
+                co2Vent = 580 + (Math.random() * 40); 
+                totalVentEnergy += (0.6 * 4.4); // 4.4배 에어컨 전력 폭증
+                logHTML += `<div class="log-entry log-alert">[${h}시간 경과] 🚨 실내 CO2 1000 ppm 돌파! 창문 개방 환기 실시 (냉난방 전력 4.4배 급증)</div>`;
             } else {
-                totalVentEnergy += 0.6; // 기본 에어컨 유지 전력
+                totalVentEnergy += 0.6; 
             }
 
-            // 아민 함침 필터 방식
-            co2Filter += baseCO2Increase * 0.8;
+            // 아민 함침 실리카 필터 방식
+            co2Filter += baseCO2Increase * 0.75;
             if (co2Filter > 730) {
-                // 필터가 농도를 700대에서 방어
                 co2Filter = 710 + (Math.random() * 30); 
             }
             
-            // [데이터 팩 4] 60°C 저온 재생으로 에너지 소모 대폭 감소 (에어컨 기본 전력과 필터팬 구동만 반영)
             totalFilterEnergy += 0.85; 
-            
-            // [데이터 팩 3] 필터 포집 용량 (1.26 mmol/g 반영, 8시간 기준 100% 한계에 도달하도록 스케일링)
-            filterCapUsed += (students / 30) * (100 / 8); 
+            filterCapUsed += (students / 30) * (90 / hours); // 8시간 기준 최대 90% 도달 설계
 
-            if (h === 3) {
-                logHTML += `<div class="log-entry">[3시간 경과] 실내 CO2 농도 ${Math.round(co2Filter)} ppm. 아민 필터 정상 포집 중 (60°C 저온 재생 모드 가동).</div>`;
+            if (h === 2 && !logHTML.includes('2시간')) {
+                // 초기 안정화 로그
             }
 
             co2VentData.push(Math.round(co2Vent));
@@ -189,14 +182,16 @@
             energyFilterData.push(parseFloat(totalFilterEnergy.toFixed(2)));
         }
 
-        logHTML += `<div class="log-entry log-success">[${hours}시간 경과] 시뮬레이션 종료. 아민 필터 시스템은 1000 ppm 이하(${Math.round(co2FilterData[co2FilterData.length - 1])} ppm)로 안전 제어 완료.</div>`;
+        // 60°C 저온 재생 모드 진입 준비 로그 추가 (90% 도달 반영)
+        const finalCap = Math.min(90, Math.round(filterCapUsed));
+        logHTML += `<div class="log-entry log-success">[${hours}시간 경과] 아민 필터 용량 ${finalCap}% 도달. 시스템 제어 완료 후 **60°C 저온 재생 모드** 진입 준비 완료.</div>`;
         document.getElementById('systemLog').innerHTML = logHTML;
         
         const logBox = document.getElementById('systemLog');
         logBox.scrollTop = logBox.scrollHeight;
 
-        document.getElementById('currentCo2').innerText = `${co2FilterData[co2FilterData.length - 1]} ppm`;
-        document.getElementById('filterCap').innerText = `${Math.min(100, Math.round(filterCapUsed))} %`;
+        document.getElementById('currentCo2').innerText = `${Math.round(co2FilterData[co2FilterData.length - 1])} ppm`;
+        document.getElementById('filterCap').innerText = `${finalCap} %`;
         document.getElementById('sysStatus').innerText = '시뮬레이션 완료';
 
         const finalVentE = energyVentData[energyVentData.length - 1];
@@ -234,7 +229,7 @@
                         fill: false 
                     },
                     { 
-                        label: '환기 없는 밀폐 교실 (ppm)', 
+                        label: '일반 교실 (창문 환기)', 
                         data: co2Vent, 
                         borderColor: '#dd6b20', 
                         backgroundColor: '#dd6b20', 
@@ -260,7 +255,7 @@
             data: {
                 labels: labels,
                 datasets: [
-                    { label: '밀폐교실 및 창문 환기 에너지 (kWh)', data: energyVent, borderColor: '#dd6b20', backgroundColor: '#dd6b20', fill: false, tension: 0.2 },
+                    { label: '일반 교실 환기 방식 에너지 (kWh)', data: energyVent, borderColor: '#dd6b20', backgroundColor: '#dd6b20', fill: false, tension: 0.2 },
                     { label: '필터 시스템 에너지 (kWh)', data: energyFilter, borderColor: '#38a169', backgroundColor: '#38a169', fill: false, tension: 0.2 }
                 ]
             },
