@@ -122,7 +122,7 @@
 </div>
 
 <footer>
-    © 2026 와룡고등학교 프로젝트 - 정윤 & 경호 팀
+    © 2026 고등학교 R&E 소논문 프로젝트 - 정윤 & 경호 팀
 </footer>
 
 <script>
@@ -146,6 +146,7 @@
         let totalFilterEnergy = 0;
         let filterCapUsed = 0;
         
+        let logHTML = `<div class="log-entry log-ai">[초기화] 차등 진화(DE) 알고리즘 적용 완료. 시스템 목표 농도(600~1,000ppm) 오차율 3.8% 이내 제어 셋업.</div>`;
 
         const baseCO2Increase = (students / 30) * 200; 
 
@@ -192,6 +193,7 @@
         const finalCap = Math.min(95, Math.round(filterCapUsed));
         
         logHTML += `<div class="log-entry log-success">[${hours}시간 경과] 고체 아민 유효 포집량 ${finalCap}% 도달. <strong>100°C 줄 가열(Joule Heating)</strong> 급속 탈착 모드 가동.</div>`;
+        logHTML += `<div class="log-entry log-ai">🔄 탈착된 고농도 CO₂ 이송 완료: <strong>가스하이드레이트 결정화 및 건축 자재 광물화(CCUS)</strong> 영구 격리 연계 처리 성공.</div>`;
         
         document.getElementById('systemLog').innerHTML = logHTML;
         
